@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorpresa 💖</title>
+
+<style>
+body{
+    margin:0;
+    background:#000;
+    color:white;
+    font-family:sans-serif;
+    overflow:hidden;
+}
+
+/* Pantallas */
+.section{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    opacity:0;
+    transition:1s;
+}
+.active{opacity:1;}
+
+/* Botón inicio */
+#start{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:black;
+    z-index:10;
+    font-size:24px;
+}
+
+/* Contador */
+#countdown{font-size:80px;}
+
+/* Texto */
+#texto{
+    font-size:26px;
+    text-align:center;
+    width:80%;
+}
+
+/* Slides */
+.slide{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    opacity:0;
+    transition:1s;
+}
+.slide.active{opacity:1;}
+
+.slide img{
+    width:85%;
+    border-radius:20px;
+}
+
+/* círculo final */
+#contenedorCorazon{
+    position:relative;
+    width:320px;
+    height:300px;
+}
+
+.foto{
+    width:60px;
+    height:60px;
+    position:absolute;
+    border-radius:10px;
+    transition:0.2s;
+}
+</style>
+</head>
+
+<body>
+
+<div id="start">Toca para comenzar 💖</div>
+
+<audio id="music" src="music/musica.mp3" loop></audio>
+
+<!-- ⏳ -->
+<div id="p1" class="section">
+    <div id="countdown">5</div>
+</div>
+
+<!-- 💬 -->
+<div id="p2" class="section">
+    <div id="texto"></div>
+</div>
+
+<!-- 📖 -->
+<div id="p3" class="section">
+    <div class="slide active"><img src="img/1.jpg"></div>
+    <div class="slide"><img src="img/2.jpg"></div>
+    <div class="slide"><img src="img/3.jpg"></div>
+    <div class="slide"><img src="img/4.jpg"></div>
+    <div class="slide"><img src="img/5.jpg"></div>
+    <div class="slide"><img src="img/6.jpg"></div>
+    <div class="slide"><img src="img/7.jpg"></div>
+</div>
+
+<!-- 🔄 FINAL CIRCULAR -->
+<div id="p4" class="section">
+    <div id="contenedorCorazon">
+        <img src="img/1.jpg" class="foto">
+        <img src="img/2.jpg" class="foto">
+        <img src="img/3.jpg" class="foto">
+        <img src="img/4.jpg" class="foto">
+        <img src="img/5.jpg" class="foto">
+        <img src="img/6.jpg" class="foto">
+        <img src="img/7.jpg" class="foto">
+        <img src="img/8.jpg" class="foto">
+        <img src="img/9.jpg" class="foto">
+        <img src="img/10.jpg" class="foto">
+        <img src="img/11.jpg" class="foto">
+     
+    
+    </div>
+</div>
+
+<script>
+
+// 🎵 inicio con toque
+document.getElementById("start").addEventListener("click",()=>{
+    document.getElementById("start").style.display="none";
+    document.getElementById("music").play();
+    cambiar("p1");
+    iniciarContador();
+});
+
+// ⏳ contador
+function iniciarContador(){
+    let t=5;
+    let cd=document.getElementById("countdown");
+    cd.innerText=t;
+
+    let inter=setInterval(()=>{
+        t--;
+        cd.innerText=t;
+
+        if(t===0){
+            clearInterval(inter);
+            cambiar("p2");
+            escribirTexto("Hay momentos que no se olvidan... 💖");
+        }
+    },1000);
+}
+
+// ⌨️ texto
+function escribirTexto(texto){
+    let el=document.getElementById("texto");
+    let i=0;
+
+    let inter=setInterval(()=>{
+        el.innerHTML+=texto[i];
+        i++;
+        if(i>=texto.length){
+            clearInterval(inter);
+
+            setTimeout(()=>{
+                cambiar("p3");
+                iniciarSlider();
+            },2000);
+        }
+    },40);
+}
+
+// 📖 slider auto
+function iniciarSlider(){
+    let slides=document.querySelectorAll(".slide");
+    let i=0;
+
+    let inter=setInterval(()=>{
+        slides[i].classList.remove("active");
+        i++;
+
+        if(i>=slides.length){
+            clearInterval(inter);
+
+            setTimeout(()=>{
+                cambiar("p4");
+                animarCirculo();
+            },1000);
+
+            return;
+        }
+
+        slides[i].classList.add("active");
+
+    },2500);
+}
+
+// 🔄 ANIMACIÓN CIRCULAR FINAL
+function animarCirculo(){
+
+    let fotos=document.querySelectorAll(".foto");
+
+    // posiciones aleatorias iniciales
+    fotos.forEach(f=>{
+        f.style.left = Math.random()*window.innerWidth + "px";
+        f.style.top = Math.random()*window.innerHeight + "px";
+    });
+
+    let centroX = 150;
+    let centroY = 120;
+    let radio = 120;
+    let angulo = 0;
+
+    function animar(){
+
+        fotos.forEach((f,i)=>{
+            let angle = angulo + (i * (2*Math.PI / fotos.length));
+
+            let x = centroX + Math.cos(angle) * radio;
+            let y = centroY + Math.sin(angle) * radio;
+
+            f.style.left = x + "px";
+            f.style.top = y + "px";
+        });
+
+        angulo += 0.02;
+        requestAnimationFrame(animar);
+    }
+
+    setTimeout(()=>{
+        animar();
+    },1000);
+}
+
+// 🔄 cambio pantallas
+function cambiar(id){
+    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+</script>
+
+</body>
+</html>
